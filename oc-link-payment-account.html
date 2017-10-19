@@ -1,17 +1,7 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-radio-group/paper-radio-group.html">
-<link rel="import" href="../paper-radio-button/paper-radio-button.html">
-<link rel="import" href="../iron-form/iron-form.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../oc-accounts-api/oc-accounts-api.html">
+<link rel="import" href="../paper-material/paper-material.html">
 
-<!--
-`oc-link-payment-account`
-Element for linking an account to a user to make payments
-
-@demo demo/index.html
--->
 
 <dom-module id="oc-link-payment-account">
   <template>
@@ -25,7 +15,7 @@ Element for linking an account to a user to make payments
       }
 
         .image-link {
-          outline: none;§
+          outline: none;
         }
 
         .image-link > shop-image::after {
@@ -120,97 +110,98 @@ Element for linking an account to a user to make payments
             disable-native-validation-ui
             novalidate
             id="paymentAccountForm">
-    <div class="row">
-
-      <div class="col-xs-12">
-        <oc-accounts-api id="accountsApi"></oc-accounts-api>
-        <h5>Personal Details</h5>
         <div class="row">
+
           <div class="col-xs-12">
-            <paper-radio-group selected="{{accountData.accountTypeId}}" attr-for-selected="value" required>
-              <paper-radio-button name="flash" value="1">Flash</paper-radio-button>
-            </paper-radio-group>
-          </div>
-          <div class="col-xs-12">
-            <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
-          </div>
-          <div class="col-xs-12">
-            <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+            <oc-accounts-api id="accountsApi"></oc-accounts-api>
+            <h5>Account Details</h5>
+            <div class="row">
+              <div class="col-xs-12">
+                <paper-radio-group selected="{{accountData.accountTypeId}}" attr-for-selected="value" required>
+                  <paper-radio-button name="flash" value="1">Flash</paper-radio-button>
+                </paper-radio-group>
+              </div>
+              <div class="col-xs-12">
+                <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
+              </div>
+              <div class="col-xs-12">
+                <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <h5>Payment details</h5>
-    <div class="row">
-      <div class="col-xs-23">
-        <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
-      </div>
-    </div>
-  </form>
+        <h5>Payment details</h5>
+        <div class="row">
+          <div class="col-xs-23">
+            <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
+          </div>
+        </div>
+      </form>
     </paper-material>
-
-    </div>
-
-
   </template>
-
   <script>
-    Polymer({
+    /**
+     * `oc-link-payment-account`
+     * Element to link payment accounts
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class OcLinkPaymentAccount extends Polymer.Element {
+        static get is() {
+            return 'oc-link-payment-account';
+        }
 
-      is: 'oc-link-payment-account',
+        static get properties() {
+            return {
+                userId: {
+                    type: Number,
+                    value: OC.userId,
+                },
+                accountTypeId: Number,
+                name: String,
+                key: {
+                    type: String,
+                    value: "msisdn"
+                },
+                value: String,
+            };
+        }
 
-      properties: {
-        properties: {
-          userId: {
-          type: Number,
-          value: OC.userId,
-          },
-          accountTypeId: Number,
-          name: String,
-          key: {
-            type: String,
-            value: "msisdn"
-          },
-          value: String,
-      },
-    },
+        ready() {
+            super.ready();
+            this.addEventListener('iron-form-presubmit', (e) => this._formHandler(e));
+        }
 
-    listeners: {
-      'iron-form-presubmit':'_formHandler'
-    },
+        _formHandler(e) {
+            e.preventDefault();
+            var form = this.$.paymentAccountForm;
 
-    _formHandler : function(e) {
-      e.preventDefault();
-      var form = this.$.paymentAccountForm;
+            if (form.validate()) {
+                var formData = form.serialize(),
+                    accountData = {};
 
-      if (form.validate()) {
-        var formData = form.serialize(),
-                accountData = {};
+                accountData.accountTypeId = formData.accountTypeId;
+                accountData.name = formData.name;
 
-        var accountTypeId = 1;
-        accountData.accountTypeId = accountTypeId;
-        accountData.name = formData.name;
-
-        var keyName = "msisdn";
-        //accountData.key = keyName;
-
-      //  accountData.fields.value = formData.mobile;
-        accountData.fields = [{
-          key: keyName,
-          value: formData.mobile
-        }];
-
-        this.fire('addAccount', accountData);
-  }
-},
+                var keyName = "msisdn";
+                accountData.fields = [{
+                    key: keyName,
+                    value: formData.mobile
+                }];
 
 
-      _submitForm : function(){
-        this.$.paymentAccountForm.submit();
+                this.dispatchEvent(new CustomEvent('addAccount', {
+                    bubbles: true, composed: true, detail:
+                        {accountData: accountData}
+                }));
 
-      }
+            }
+        }
+    }
 
-    });
+    window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
   </script>
 </dom-module>
