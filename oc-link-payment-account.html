@@ -7,7 +7,7 @@
 <dom-module id="oc-link-payment-account">
   <template>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-      <style include="shop-button" is="custom-style">
+    <style include="shop-button" is="custom-style">
 
       :host {
         display: block;
@@ -15,197 +15,200 @@
         color: #000;
       }
 
-        .image-link {
-          outline: none;
-        }
+      .image-link {
+        outline: none;
+      }
 
-        .image-link > shop-image::after {
-          display: block;
-          content: '';
+      .image-link > shop-image::after {
+        display: block;
+        content: '';
+        position: absolute;
+        transition-property: opacity;
+        transition-duration: 0s;
+        transition-delay: 90ms;
+        pointer-events: none;
+        opacity: 0;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
+        outline: #2196F3 auto 5px;
+        outline: -moz-mac-focusring auto 5px;
+        outline: -webkit-focus-ring-color auto 5px;
+      }
+
+      .image-link:focus > shop-image::after {
+        opacity: 1;
+      }
+
+      .item {
+        display: block;
+        text-decoration: none;
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .item:nth-of-type(3),
+      .item:nth-of-type(4) {
+        display: inline-block;
+        width: 50%;
+      }
+
+      shop-image {
+        position: relative;
+        height: 320px;
+        overflow: hidden;
+        --shop-image-img: {
           position: absolute;
-          transition-property: opacity;
-          transition-duration: 0s;
-          transition-delay: 90ms;
-          pointer-events: none;
-          opacity: 0;
-          top: 5px;
-          left: 5px;
-          right: 5px;
-          bottom: 5px;
-          outline: #2196F3 auto 5px;
-          outline: -moz-mac-focusring auto 5px;
-          outline: -webkit-focus-ring-color auto 5px;
-        }
+          top: 0;
+          bottom: 0;
+          left: -9999px;
+          right: -9999px;
+          max-width: none;
+        };
+      }
 
-        .image-link:focus > shop-image::after {
-          opacity: 1;
-        }
+      h2 {
+        font-size: 1.3em;
+        font-weight: 500;
+        margin: 32px 0;
+      }
 
-        .item {
-          display: block;
-          text-decoration: none;
-          text-align: center;
-          margin-bottom: 40px;
-        }
+      .item:nth-of-type(3) > h2,
+      .item:nth-of-type(4) > h2 {
+        font-size: 1.1em;
+      }
 
-        .item:nth-of-type(3),
-        .item:nth-of-type(4) {
-          display: inline-block;
-          width: 50%;
-        }
-
+      @media (max-width: 767px) {
         shop-image {
-          position: relative;
-          height: 320px;
-          overflow: hidden;
-          --shop-image-img: {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: -9999px;
-            right: -9999px;
-            max-width: none;
-          };
+          height: 240px;
         }
 
         h2 {
-          font-size: 1.3em;
-          font-weight: 500;
-          margin: 32px 0;
+          margin: 24px 0;
         }
 
-        .item:nth-of-type(3) > h2,
-        .item:nth-of-type(4) > h2 {
-          font-size: 1.1em;
+        .item:nth-of-type(3) > shop-button > a,
+        .item:nth-of-type(4) > shop-button > a {
+          padding: 8px 24px;
         }
-
-        @media (max-width: 767px) {
-          shop-image {
-            height: 240px;
-          }
-
-          h2 {
-            margin: 24px 0;
-          }
-
-          .item:nth-of-type(3) > shop-button > a,
-          .item:nth-of-type(4) > shop-button > a {
-            padding: 8px 24px;
-          }
-        }
-        p {
-          color: #000 !important;
-        }
-        .white-bg {
-          background: #fff;
-        }
-      </style>
+      }
+      p {
+        color: #000 !important;
+      }
+      .white-bg {
+        background: #fff;
+      }
+    </style>
 
 
 
 
     <div class="container-fluid">
-    <paper-material class="white-bg">
-      <iron-form disable-native-validation-ui novalidate
-                 id="accountForm">
-        <form method="post">
-          <div class="row">
-            <div class="col-xs-12">
-              <oc-accounts-api id="accountsApi"></oc-accounts-api>
-              <h5>Account Details</h5>
-              <div class="row">
-                <div class="col-xs-12">
-                  <paper-radio-group selected="{{accountData.accountTypeId}}" attr-for-selected="value" required>
-                    <paper-radio-button name="flash" value="1">Flash</paper-radio-button>
-                  </paper-radio-group>
-                </div>
-                <div class="col-xs-12">
-                  <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
-                </div>
-                <div class="col-xs-12">
-                  <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+      <paper-material class="white-bg">
+        <iron-form disable-native-validation-ui novalidate
+                   id="accountForm">
+          <form method="post">
+            <div class="row">
+              <div class="col-xs-12">
+                <oc-accounts-api id="accountsApi"></oc-accounts-api>
+                <h5>Account Details</h5>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <paper-radio-group attr-for-selected="value" required>
+                      <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
+                    </paper-radio-group>
+                  </div>
+                  <div class="col-xs-12">
+                    <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
+                  </div>
+                  <div class="col-xs-12">
+                    <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <h5>Payment details</h5>
-          <div class="row">
-            <div class="col-xs-23">
-              <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
+            <h5>Payment details</h5>
+            <div class="row">
+              <div class="col-xs-23">
+                <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
+              </div>
             </div>
-          </div>
-        </form>
-      </iron-form>
-    </paper-material>
+          </form>
+        </iron-form>
+      </paper-material>
   </template>
   <script>
-    /**
-     * `oc-link-payment-account`
-     * Element to link payment accounts
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class OcLinkPaymentAccount extends Polymer.Element {
-        static get is() {
-            return 'oc-link-payment-account';
-        }
+      /**
+       * `oc-link-payment-account`
+       * Element to link payment accounts
+       *
+       * @customElement
+       * @polymer
+       * @demo demo/index.html
+       */
+      class OcLinkPaymentAccount extends Polymer.Element {
+          static get is() {
+              return 'oc-link-payment-account';
+          }
 
-        static get properties() {
-            return {
-                userId: {
-                    type: Number,
-                    value: OC.userId,
-                },
-                accountTypeId: Number,
-                name: String,
-                key: {
-                    type: String,
-                    value: "msisdn"
-                },
-                value: String,
-            };
-        }
+          static get properties() {
+              return {
+                  userId: {
+                      type: Number,
+                      value: OC.userId,
+                  },
+                  accountTypeId: Number,
+                  name: String,
+                  key: {
+                      type: String,
+                      value: "msisdn"
+                  },
+                  value: String,
+              };
+          }
 
-        ready() {
-            super.ready();
-            this.addEventListener('iron-form-presubmit', (e) => this._formHandler(e));
-        }
+          ready() {
+              super.ready();
+          }
 
-        connectedCallback() {
-            super.connectedCallback();
-            const form = this.$.accountForm;
-            form.addEventListener('iron-form-presubmit', function (event) {
-                event.preventDefault();
-                if (form.validate()) {
-                    var formData = form.serialize(),
-                        accountData = {};
+          connectedCallback() {
+              super.connectedCallback();
+              const form = this.$.accountForm;
+              form.addEventListener('iron-form-presubmit', function (event) {
+                  event.preventDefault();
+                  if (form.validate()) {
+                      var formData = form.serializeForm(),
+                          accountData = {};
 
-                    accountData.accountTypeId = formData.accountTypeId;
-                    accountData.name = formData.name;
+                      accountData.accountTypeId = formData.accountTypeId;
+                      accountData.name = formData.name;
 
-                    var keyName = "msisdn";
-                    accountData.fields = [{
-                        key: keyName,
-                        value: formData.mobile
-                    }];
+                      var keyName = "msisdn";
+                      accountData.fields = [{
+                          key: keyName,
+                          value: formData.mobile
+                      }];
 
 
-                    this.dispatchEvent(new CustomEvent('add-account', {
-                        bubbles: true, composed: true, detail:
-                            {accountData: accountData}
-                    }));
+                      this.dispatchEvent(new CustomEvent('add-account', {
+                          bubbles: true, composed: true, detail:
+                              {accountData: accountData}
+                      }));
 
-                }else{
-                    this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
-                        detail: "Failed to add account"}));
-                }
-            });
-        }
-    }
+                  }else{
+                      this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
+                          detail: "Failed to add account"}));
+                  }
+              });
+          }
 
-    window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
+          _submitForm(){
+              this.$.accountForm.submit();
+          };
+      }
+
+      window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
   </script>
 </dom-module>
