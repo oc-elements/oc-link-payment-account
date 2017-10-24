@@ -106,16 +106,13 @@
 
     <div class="container-fluid">
       <paper-material class="white-bg">
-        <iron-form disable-native-validation-ui novalidate
-                   id="accountForm">
-          <form method="post">
             <div class="row">
               <div class="col-xs-12">
                 <oc-accounts-api id="accountsApi"></oc-accounts-api>
                 <h5>Account Details</h5>
                 <div class="row">
                   <div class="col-xs-12">
-                    <paper-radio-group attr-for-selected="value" required>
+                    <paper-radio-group attr-for-selected="value" required selected="{{ accountData.accountTypeId }}">
                       <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
                     </paper-radio-group>
                   </div>
@@ -123,7 +120,7 @@
                     <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
                   </div>
                   <div class="col-xs-12">
-                    <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+                    <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.mobile}}"></paper-input>
                   </div>
                 </div>
               </div>
@@ -132,12 +129,11 @@
             <h5>Payment details</h5>
             <div class="row">
               <div class="col-xs-23">
-                <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
+                <paper-button raised class="primary" on-click="_submit" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
               </div>
             </div>
-          </form>
-        </iron-form>
       </paper-material>
+    </div>
   </template>
   <script>
       /**
@@ -155,15 +151,17 @@
 
           static get properties() {
               return {
+                  /**
+                   * User ID to be passed
+                   */
                   userId: {
-                      type: Number,
-                      value: OC.userId,
+                      type: Number
                   },
-                  accountTypeId: Number,
-                  name: String,
-                  key: {
-                      type: String,
-                      value: "msisdn"
+                  /**
+                   * Object for capturing the account to be fetched
+                   */
+                  _accountData: {
+                      type: Object
                   },
                   value: String,
               };
@@ -173,40 +171,31 @@
               super.ready();
           }
 
-          connectedCallback() {
-              super.connectedCallback();
-              const form = this.$.accountForm;
-              form.addEventListener('iron-form-presubmit', function (event) {
-                  event.preventDefault();
-                  if (form.validate()) {
-                      var formData = form.serializeForm(),
-                          accountData = {};
+          _submit(){
 
-                      accountData.accountTypeId = formData.accountTypeId;
-                      accountData.name = formData.name;
+              //build the data for the api call
+              let data = {};
 
-                      var keyName = "msisdn";
-                      accountData.fields = [{
-                          key: keyName,
-                          value: formData.mobile
-                      }];
+              if(! _validate(){
 
+              }
 
-                      this.dispatchEvent(new CustomEvent('add-account', {
-                          bubbles: true, composed: true, detail:
-                              {accountData: accountData}
-                      }));
+              data.accountTypeId = this._accountData.accountTypeId
+              data.name = this._accountData.name;
 
-                  }else{
-                      this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
-                          detail: "Failed to add account"}));
-                  }
-              });
+              data.fields = [{
+                  key:  "msisdn",
+                  value: this._accountData
+              }];
+
+              this.dispatchEvent(new CustomEvent('add-account', {
+                  bubbles: true, composed: true, detail:
+                      {accountData: data}
+              }));
+
+              this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
+                  detail: "Failed to add account"}));
           }
-
-          _submitForm(){
-              this.$.accountForm.submit();
-          };
       }
 
       window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
