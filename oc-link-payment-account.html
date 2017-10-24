@@ -124,13 +124,16 @@
                         value: this._accountData.mobile
                     }];
 
-                    this.dispatchEvent(new CustomEvent('add-account', {
-                        bubbles: true, composed: true, detail:
-                            {accountData: data}
-                    }));
-                }
-            };
-        }
+                  this.dispatchEvent(new CustomEvent('add-account', {
+                      bubbles: true, composed: true, detail:
+                          {accountData: data}
+                  }));
+
+          //disables the button
+                    this._loading = false;
+
+                }};
+      }
 
         window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
     </script>
