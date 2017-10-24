@@ -1,6 +1,6 @@
 # \<oc-link-payment-account\>
 
-Element for linking an account to a user to make payments
+Element to link payment accounts
 
 ## Install the Polymer-CLI
 

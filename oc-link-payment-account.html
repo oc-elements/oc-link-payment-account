@@ -1,22 +1,13 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-radio-group/paper-radio-group.html">
-<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../oc-accounts-api/oc-accounts-api.html">
+<link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../iron-form/iron-form.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<!--
-`oc-link-payment-account`
-Element for linking an account to a user to make payments
-
-@demo demo/index.html
--->
 
 <dom-module id="oc-link-payment-account">
   <template>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-      <style include="shop-button" is="custom-style">
+    <style include="shop-button" is="custom-style">
 
       :host {
         display: block;
@@ -24,193 +15,199 @@ Element for linking an account to a user to make payments
         color: #000;
       }
 
-        .image-link {
-          outline: none;§
-        }
+      .image-link {
+        outline: none;
+      }
 
-        .image-link > shop-image::after {
-          display: block;
-          content: '';
+      .image-link > shop-image::after {
+        display: block;
+        content: '';
+        position: absolute;
+        transition-property: opacity;
+        transition-duration: 0s;
+        transition-delay: 90ms;
+        pointer-events: none;
+        opacity: 0;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
+        outline: #2196F3 auto 5px;
+        outline: -moz-mac-focusring auto 5px;
+        outline: -webkit-focus-ring-color auto 5px;
+      }
+
+      .image-link:focus > shop-image::after {
+        opacity: 1;
+      }
+
+      .item {
+        display: block;
+        text-decoration: none;
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .item:nth-of-type(3),
+      .item:nth-of-type(4) {
+        display: inline-block;
+        width: 50%;
+      }
+
+      shop-image {
+        position: relative;
+        height: 320px;
+        overflow: hidden;
+        --shop-image-img: {
           position: absolute;
-          transition-property: opacity;
-          transition-duration: 0s;
-          transition-delay: 90ms;
-          pointer-events: none;
-          opacity: 0;
-          top: 5px;
-          left: 5px;
-          right: 5px;
-          bottom: 5px;
-          outline: #2196F3 auto 5px;
-          outline: -moz-mac-focusring auto 5px;
-          outline: -webkit-focus-ring-color auto 5px;
-        }
+          top: 0;
+          bottom: 0;
+          left: -9999px;
+          right: -9999px;
+          max-width: none;
+        };
+      }
 
-        .image-link:focus > shop-image::after {
-          opacity: 1;
-        }
+      h2 {
+        font-size: 1.3em;
+        font-weight: 500;
+        margin: 32px 0;
+      }
 
-        .item {
-          display: block;
-          text-decoration: none;
-          text-align: center;
-          margin-bottom: 40px;
-        }
+      .item:nth-of-type(3) > h2,
+      .item:nth-of-type(4) > h2 {
+        font-size: 1.1em;
+      }
 
-        .item:nth-of-type(3),
-        .item:nth-of-type(4) {
-          display: inline-block;
-          width: 50%;
-        }
-
+      @media (max-width: 767px) {
         shop-image {
-          position: relative;
-          height: 320px;
-          overflow: hidden;
-          --shop-image-img: {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: -9999px;
-            right: -9999px;
-            max-width: none;
-          };
+          height: 240px;
         }
 
         h2 {
-          font-size: 1.3em;
-          font-weight: 500;
-          margin: 32px 0;
+          margin: 24px 0;
         }
 
-        .item:nth-of-type(3) > h2,
-        .item:nth-of-type(4) > h2 {
-          font-size: 1.1em;
+        .item:nth-of-type(3) > shop-button > a,
+        .item:nth-of-type(4) > shop-button > a {
+          padding: 8px 24px;
         }
-
-        @media (max-width: 767px) {
-          shop-image {
-            height: 240px;
-          }
-
-          h2 {
-            margin: 24px 0;
-          }
-
-          .item:nth-of-type(3) > shop-button > a,
-          .item:nth-of-type(4) > shop-button > a {
-            padding: 8px 24px;
-          }
-        }
-        p {
-          color: #000 !important;
-        }
-        .white-bg {
-          background: #fff;
-        }
-      </style>
-
-
-
+      }
+      p {
+        color: #000 !important;
+      }
+      .white-bg {
+        background: #fff;
+      }
+    </style>
 
     <div class="container-fluid">
-    <paper-material class="white-bg">
-      <form is="iron-form"
-        method="post"
-            disable-native-validation-ui
-            novalidate
-            id="paymentAccountForm">
-    <div class="row">
-
-      <div class="col-xs-12">
-        <oc-accounts-api id="accountsApi"></oc-accounts-api>
-        <h5>Personal Details</h5>
+      <paper-material class="white-bg">
         <div class="row">
           <div class="col-xs-12">
-            <paper-radio-group selected="{{accountData.accountTypeId}}" attr-for-selected="value" required>
-              <paper-radio-button name="flash" value="1">Flash</paper-radio-button>
-            </paper-radio-group>
-          </div>
-          <div class="col-xs-12">
-            <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
-          </div>
-          <div class="col-xs-12">
-            <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.key.mobile}}"></paper-input>
+            <oc-accounts-api id="accountsApi"></oc-accounts-api>
+            <h5>Account Details</h5>
+            <div class="row">
+              <div class="col-xs-12">
+                <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
+                  <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
+                </paper-radio-group>
+              </div>
+              <div class="col-xs-12">
+                <paper-input id="name"
+                             always-float-label
+                             required
+                             auto-validate
+                             label="Account Name/Description" name="name" value="{{_accountData.name}}"
+                             min-lenght="1"
+                             error-message="Not Valid account name"></paper-input>
+              </div>
+              <div class="col-xs-12">
+                <paper-input id="mobile"
+                             always-float-label
+                             required auto-validate
+                             label="Mobile Number"
+                             name="mobile"
+                             value="{{_accountData.mobile}}"
+                             prevent-invalid-input
+                             type="number"
+                             allowed-pattern="[[0|\+[0-9]{1,5})?([7-9][0-9]{9}]"
+                             error-message="Not valid mobile number"></paper-input>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <h5>Payment details</h5>
-    <div class="row">
-      <div class="col-xs-23">
-        <paper-button raised class="primary" on-click="_submitForm" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
-      </div>
-    </div>
-  </form>
-    </paper-material>
-
-    </div>
-
-
+        <h5>Payment details</h5>
+        <div class="row">
+          <div class="col-xs-23">
+            <paper-button raised class="primary" on-click="_submit" disabled$="{{loading}}">Add</paper-button>
+          </div>
+        </div>
+      </paper-material>
   </template>
-
   <script>
-    Polymer({
+      /**
+       * `oc-link-payment-account`
+       * Element to link payment accounts
+       *
+       * @customElement
+       * @polymer
+       * @demo demo/index.html
+       */
+      class OcLinkPaymentAccount extends Polymer.Element {
+          static get is() {
+              return 'oc-link-payment-account';
+          }
 
-      is: 'oc-link-payment-account',
+          static get properties() {
+              return {
+                  /**
+                   * User ID to be passed
+                   */
+                  userId: {
+                      type: Number,
+                      value:  OC.identity.userId
+                  },
+                  /**
+                   * Object for capturing the account to be fetched
+                   */
+                  _accountData: {
+                      type: Object,
+                      notify: true,
+                      value: {accountTypeId :1}
+                  },
+                  value: String,
+              };
+          }
 
-      properties: {
-        properties: {
-          userId: {
-          type: Number,
-          value: OC.userId,
-          },
-          accountTypeId: Number,
-          name: String,
-          key: {
-            type: String,
-            value: "msisdn"
-          },
-          value: String,
-      },
-    },
+          ready() {
+              super.ready();
+          }
 
-    listeners: {
-      'iron-form-presubmit':'_formHandler'
-    },
+          _submit(){
 
-    _formHandler : function(e) {
-      e.preventDefault();
-      var form = this.$.paymentAccountForm;
+              if(this.$.name.validate()
+                  && this.$.mobile.validate()) {
 
-      if (form.validate()) {
-        var formData = form.serialize(),
-                accountData = {};
+                  //build the data for the api call
+                  let data = {};
+                  data.accountTypeId = this._accountData.accountTypeId
+                  data.name = this._accountData.name;
 
-        var accountTypeId = 1;
-        accountData.accountTypeId = accountTypeId;
-        accountData.name = formData.name;
+                  data.fields = [{
+                      key: "msisdn",
+                      value: this._accountData.mobile
+                  }];
 
-        var keyName = "msisdn";
-        //accountData.key = keyName;
-
-      //  accountData.fields.value = formData.mobile;
-        accountData.fields = [{
-          key: keyName,
-          value: formData.mobile
-        }];
-
-        this.fire('addAccount', accountData);
-  }
-},
-
-
-      _submitForm : function(){
-        this.$.paymentAccountForm.submit();
-
+                  this.dispatchEvent(new CustomEvent('add-account', {
+                      bubbles: true, composed: true, detail:
+                          {accountData: data}
+                  }));
+              }
+          };
       }
 
-    });
+      window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
   </script>
 </dom-module>
