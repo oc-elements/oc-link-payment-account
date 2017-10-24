@@ -101,39 +101,50 @@
       }
     </style>
 
-
-
-
     <div class="container-fluid">
       <paper-material class="white-bg">
+        <div class="row">
+          <div class="col-xs-12">
+            <oc-accounts-api id="accountsApi"></oc-accounts-api>
+            <h5>Account Details</h5>
             <div class="row">
               <div class="col-xs-12">
-                <oc-accounts-api id="accountsApi"></oc-accounts-api>
-                <h5>Account Details</h5>
-                <div class="row">
-                  <div class="col-xs-12">
-                    <paper-radio-group attr-for-selected="value" required selected="{{ accountData.accountTypeId }}">
-                      <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
-                    </paper-radio-group>
-                  </div>
-                  <div class="col-xs-12">
-                    <paper-input always-float-label required label="Account Name/Description" name="name" value="{{accountData.name}}"></paper-input>
-                  </div>
-                  <div class="col-xs-12">
-                    <paper-input always-float-label required label="Mobile Number" name="mobile" value="{{accountData.mobile}}"></paper-input>
-                  </div>
-                </div>
+                <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
+                  <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
+                </paper-radio-group>
+              </div>
+              <div class="col-xs-12">
+                <paper-input id="name"
+                             always-float-label
+                             required
+                             auto-validate
+                             label="Account Name/Description" name="name" value="{{_accountData.name}}"
+                             min-lenght="1"
+                             error-message="Not Valid account name"></paper-input>
+              </div>
+              <div class="col-xs-12">
+                <paper-input id="mobile"
+                             always-float-label
+                             required auto-validate
+                             label="Mobile Number"
+                             name="mobile"
+                             value="{{_accountData.mobile}}"
+                             prevent-invalid-input
+                             type="number"
+                             allowed-pattern="[[0|\+[0-9]{1,5})?([7-9][0-9]{9}]"
+                             error-message="Not valid mobile number"></paper-input>
               </div>
             </div>
+          </div>
+        </div>
 
-            <h5>Payment details</h5>
-            <div class="row">
-              <div class="col-xs-23">
-                <paper-button raised class="primary" on-click="_submit" disabled$="{{loading}}"><a href="#">Add</a></paper-button>
-              </div>
-            </div>
+        <h5>Payment details</h5>
+        <div class="row">
+          <div class="col-xs-23">
+            <paper-button raised class="primary" on-click="_submit" disabled$="{{loading}}">Add</paper-button>
+          </div>
+        </div>
       </paper-material>
-    </div>
   </template>
   <script>
       /**
@@ -155,13 +166,16 @@
                    * User ID to be passed
                    */
                   userId: {
-                      type: Number
+                      type: Number,
+                      value:  OC.identity.userId
                   },
                   /**
                    * Object for capturing the account to be fetched
                    */
                   _accountData: {
-                      type: Object
+                      type: Object,
+                      notify: true,
+                      value: {accountTypeId :1}
                   },
                   value: String,
               };
@@ -173,26 +187,25 @@
 
           _submit(){
 
-              //build the data for the api call
-              let data = {};
+              if(this.$.name.validate()
+                  && this.$.mobile.validate()) {
 
+                  //build the data for the api call
+                  let data = {};
+                  data.accountTypeId = this._accountData.accountTypeId
+                  data.name = this._accountData.name;
 
-              data.accountTypeId = this._accountData.accountTypeId
-              data.name = this._accountData.name;
+                  data.fields = [{
+                      key: "msisdn",
+                      value: this._accountData.mobile
+                  }];
 
-              data.fields = [{
-                  key:  "msisdn",
-                  value: this._accountData
-              }];
-
-              this.dispatchEvent(new CustomEvent('add-account', {
-                  bubbles: true, composed: true, detail:
-                      {accountData: data}
-              }));
-
-              this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
-                  detail: "Failed to add account"}));
-          }
+                  this.dispatchEvent(new CustomEvent('add-account', {
+                      bubbles: true, composed: true, detail:
+                          {accountData: data}
+                  }));
+              }
+          };
       }
 
       window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
