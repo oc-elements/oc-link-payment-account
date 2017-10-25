@@ -48,7 +48,7 @@
                                      value="{{_accountData.mobile}}"
                                      prevent-invalid-input
                                      type="number"
-                                     allowed-pattern="[[0|\+[0-9]{1,5})?([7-9][0-9]{9}]"
+                                     allowed-pattern="[0-9\-]"
                                      error-message="Not valid mobile number"></paper-input>
                     </div>
                     <div class="card-actions">
@@ -107,7 +107,6 @@
 
             _submit(){
 
-                console.log(this.$.submit.disabled);
                 if(!this.$.submit.disabled && this.$.name.validate()
                     && this.$.mobile.validate()) {
 
