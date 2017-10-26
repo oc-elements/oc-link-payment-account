@@ -6,60 +6,76 @@
 
 
 <dom-module id="oc-link-payment-account">
-    <template>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <style include="shop-button" is="custom-style">
+  <template>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style include="shop-button" is="custom-style">
 
-            :host {
-                display: block;
-                background: #BFD730;
-                color: #000;
-            }
+      :host {
+        display: block;
+        background: #fff;
+        color: #000;
+      }
 
-            paper-card {
-                width:100%;
-            }
+      paper-card {
+        width:100%;
+      }
 
-        </style>
+      .add-button-row {
+        background: #ffffff;
+        margin: 15px 0;
+      }
+      .add-button {
+        width: 100%;
+        color: #fff;
+        background: #2BB673;
+      }
 
-        <div class="container-fluid">
-            <paper-card>
-                <div class="card-content">
-                    <div class="col-xs-12">
-                        <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
-                            <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
-                        </paper-radio-group>
-                    </div>
-                    <div class="col-xs-12">
-                        <paper-input id="name"
-                                     always-float-label
-                                     required
-                                     auto-validate
-                                     label="Account Name/Description" name="name" value="{{_accountData.name}}"
-                                     min-lenght="1"
-                                     error-message="Not Valid account name"></paper-input>
-                    </div>
-                    <div class="col-xs-12">
-                        <paper-input id="mobile"
-                                     always-float-label
-                                     required auto-validate
-                                     label="Mobile Number"
-                                     name="mobile"
-                                     value="{{_accountData.mobile}}"
-                                     prevent-invalid-input
-                                     type="number"
-                                     allowed-pattern="[0-9\-]"
-                                     error-message="Not valid mobile number"></paper-input>
-                    </div>
-                    <div class="card-actions">
-                        <div class="col-xs-12">
-                            <paper-button id="submit" raised class="primary" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
-                        </div>
-                    </div>
-                </div>
-            </paper-card>
+
+    </style>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
+            <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
+          </paper-radio-group>
         </div>
-    </template>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <paper-input id="name"
+                       always-float-label
+                       required
+                       auto-validate
+                       label="Account Name/Description" name="name" value="{{_accountData.name}}"
+                       min-lenght="1"
+                       error-message="Not Valid account name"></paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <paper-input id="mobile"
+                       always-float-label
+                       required auto-validate
+                       label="Mobile Number"
+                       name="mobile"
+                       value="{{_accountData.mobile}}"
+                       prevent-invalid-input
+                       type="number"
+                       allowed-pattern="[0-9\-]"
+                       error-message="Not valid mobile number"></paper-input>
+        </div>
+      </div>
+
+      <div class="row add-button-row">
+        <div class="col-xs-12 text-center">
+          <paper-button id="submit" class="primary add-button" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
+        </div>
+      </div>
+    </div>
+  </template>
     <script>
         /**
          * `oc-link-payment-account`
