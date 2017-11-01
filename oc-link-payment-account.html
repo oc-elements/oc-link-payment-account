@@ -3,138 +3,204 @@
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../oc-peach-payment-form/oc-peach-payment-form.html">
+
 
 
 <dom-module id="oc-link-payment-account">
-    <template>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <style include="shop-button" is="custom-style">
+  <template>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style include="shop-button" is="custom-style">
 
-            :host {
-                display: block;
-                background: #BFD730;
-                color: #000;
-            }
+      :host {
+        display: block;
+        background: #fff;
+        color: #000;
+      }
 
-            paper-card {
-                width:100%;
-            }
+      paper-card {
+        width:100%;
+      }
 
-        </style>
+      .add-button-row {
+        background: #ffffff;
+        margin: 15px 0;
+      }
+      .add-button {
+        width: 100%;
+        color: #fff;
+        background: #2BB673;
+      }
 
-        <div class="container-fluid">
-            <paper-card>
-                <div class="card-content">
-                    <div class="col-xs-12">
-                        <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
-                            <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
-                        </paper-radio-group>
-                    </div>
-                    <div class="col-xs-12">
-                        <paper-input id="name"
-                                     always-float-label
-                                     required
-                                     auto-validate
-                                     label="Account Name/Description" name="name" value="{{_accountData.name}}"
-                                     min-lenght="1"
-                                     error-message="Not Valid account name"></paper-input>
-                    </div>
-                    <div class="col-xs-12">
-                        <paper-input id="mobile"
-                                     always-float-label
-                                     required auto-validate
-                                     label="Mobile Number"
-                                     name="mobile"
-                                     value="{{_accountData.mobile}}"
-                                     prevent-invalid-input
-                                     type="number"
-                                     allowed-pattern="[0-9\-]"
-                                     error-message="Not valid mobile number"></paper-input>
-                    </div>
-                    <div class="card-actions">
-                        <div class="col-xs-12">
-                            <paper-button id="submit" raised class="primary" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
-                        </div>
-                    </div>
-                </div>
-            </paper-card>
+
+    </style>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
+            <paper-radio-button value="1" name="accountTypeId">Flash</paper-radio-button>
+            <paper-radio-button value="2" name="accountTypeId">Credit Card</paper-radio-button>
+          </paper-radio-group>
         </div>
-    </template>
-    <script>
-        /**
-         * `oc-link-payment-account`
-         * Element to link payment accounts
-         *
-         * @customElement
-         * @polymer
-         * @demo demo/index.html
-         */
-        class OcLinkPaymentAccount extends Polymer.Element {
-            static get is() {
-                return 'oc-link-payment-account';
-            }
+      </div>
 
-            static get properties() {
-                return {
-                    /**
-                     * User ID to be passed
-                     */
-                    userId: {
-                        type: Number,
-                        value:  OC.identity.userId
-                    },
-                    /**
-                     * Object for capturing the account to be fetched
-                     */
-                    _accountData: {
-                        type: Object,
-                        notify: true,
-                        value: {accountTypeId :1}
-                    },
-                    value: String,
-                    _loading: {
-                        type: Boolean,
-                        value: false,
-                        notify: true
-                    }
+      <template is="dom-if" if="[[_activateFlashForm]]">
+        <div class="row">
+          <div class="col-xs-12">
+            <paper-input id="name"
+                         always-float-label
+                         required
+                         auto-validate
+                         label="Account Name/Description" name="name" value="{{_accountData.name}}"
+                         min-lenght="1"
+                         error-message="Not Valid account name"></paper-input>
+          </div>
+        </div>
 
-                };
-            }
+        <div class="row">
+          <div class="col-xs-12">
+            <paper-input id="mobile"
+                         always-float-label
+                         required auto-validate
+                         label="Mobile Number"
+                         name="mobile"
+                         value="{{_accountData.mobile}}"
+                         prevent-invalid-input
+                         type="number"
+                         allowed-pattern="[0-9\-]"
+                         error-message="Not valid mobile number"></paper-input>
+          </div>
+        </div>
+      </template>
+      <template  is="dom-if" if="[[!_activateFlashForm]]">
+        <oc-peach-payment-form checkout-id='5DCD200B2B0CA7005864091C13DFB5C9.sbg-vm-tx01'></oc-peach-payment-form>
 
-            ready() {
-                super.ready();
-            }
+      </template>
 
-            _submit(){
+      <!-- Add account button for adding a Flash account -->
+      <template is="dom-if" if="[[_activateFlashForm]]">
+        <div class="row add-button-row">
+          <div class="col-xs-12 text-center">
+            <paper-button id="submit" class="primary add-button" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
 
-                if(!this.$.submit.disabled && this.$.name.validate()
-                    && this.$.mobile.validate()) {
+  <script>
+      /**
+       * `oc-link-payment-account`
+       * Element to link payment accounts
+       *
+       * @customElement
+       * @polymer
+       * @demo demo/index.html
+       */
+      class OcLinkPaymentAccount extends Polymer.Element {
+          static get is() {
+              return 'oc-link-payment-account';
+          }
 
-                    //disables the button
-                    this._loading = true;
+          static get properties() {
+              return {
+                  /**
+                   * User ID to be passed
+                   */
+                  userId: {
+                      type: Number,
+                      value:  OC.identity.userId
+                  },
+                  /**
+                   * Object for capturing the account to be fetched
+                   */
+                  _accountData: {
+                      type: Object,
+                      notify: true,
+                      value: {}
+                  },
+                  _activateFlashForm: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  },
+                  _activateCCForm: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  },
+                  _accountTypeId: {
+                      type: Number,
+                      value: 1,
+                      observer: "_switchPaymentMethod",
+                  },
 
-                    //build the data for the api call
-                    let data = {};
-                    data.accountTypeId = this._accountData.accountTypeId
-                    data.name = this._accountData.name;
+                  _activateFlashForm: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  },
 
-                    data.fields = [{
-                        key: "msisdn",
-                        value: this._accountData.mobile
-                    }];
+                  value: String,
+                  _loading: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  }
+
+              };
+          }
+
+          ready() {
+              super.ready();
+          }
+
+          _submit(){
+
+              if(!this.$.submit.disabled && this.$.name.validate()
+                  && this.$.mobile.validate()) {
+
+                  //disables the button
+                  this._loading = true;
+
+                  //build the data for the api call
+                  let data = {};
+                  data._accountTypeId = this._accountTypeId
+                  data.name = this._accountData.name;
+
+                  data.fields = [{
+                      key: "msisdn",
+                      value: this._accountData.mobile
+                  }];
 
                   this.dispatchEvent(new CustomEvent('add-account', {
                       bubbles: true, composed: true, detail:
                           {accountData: data}
                   }));
 
-                    //disables the button
-                    this._loading = false;
-                    //reset the form
-                    this._accountData = {};
-                }};
+                  //disables the button
+                  this._loading = false;
+                  //reset the form
+                  this._accountData = {};
+              }};
+
+          _switchPaymentMethod(accountType) {
+              if (accountType ==1 ) {
+                  this._activateFlashForm = true;
+
+              }
+              else {
+                  this._activateFlashForm = false;
+              }
+
+          }
+
       }
 
-        window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
-    </script>
+      window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
+  </script>
+
 </dom-module>
+
+
