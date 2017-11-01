@@ -38,13 +38,14 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12">
+
           <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
             <paper-radio-button value="1" name="accountTypeId">Flash</paper-radio-button>
             <paper-radio-button value="2" name="accountTypeId">Credit Card</paper-radio-button>
           </paper-radio-group>
         </div>
       </div>
-
+      
       <template is="dom-if" if="[[_activateFlashForm]]">
         <div class="row">
           <div class="col-xs-12">
@@ -173,6 +174,7 @@
                       key: "msisdn",
                       value: this._accountData.mobile
                   }];
+
 
                   this.dispatchEvent(new CustomEvent('add-account', {
                       bubbles: true, composed: true, detail:
