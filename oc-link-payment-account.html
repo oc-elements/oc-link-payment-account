@@ -35,18 +35,20 @@
 
     </style>
 
+    <oc-accounts-api id="accountsApi"></oc-accounts-api>
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12">
 
           <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
-            <paper-radio-button value="1" name="accountTypeId">Flash</paper-radio-button>
-            <paper-radio-button value="2" name="accountTypeId">Credit Card</paper-radio-button>
+            <template is="dom-repeat" items="[[_accountTypes]]">
+              <paper-radio-button value="[[item.method]]" name="accountType">[[item.name]]</paper-radio-button>
+            </template>
           </paper-radio-group>
         </div>
       </div>
-      
-      <template is="dom-if" if="[[_activateFlashForm]]">
+
+      <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
         <div class="row">
           <div class="col-xs-12">
             <paper-input id="name"
@@ -73,20 +75,17 @@
                          error-message="Not valid mobile number"></paper-input>
           </div>
         </div>
-      </template>
-      <template  is="dom-if" if="[[!_activateFlashForm]]">
-        <oc-peach-payment-form checkout-id='5DCD200B2B0CA7005864091C13DFB5C9.sbg-vm-tx01'></oc-peach-payment-form>
-
-      </template>
-
-      <!-- Add account button for adding a Flash account -->
-      <template is="dom-if" if="[[_activateFlashForm]]">
         <div class="row add-button-row">
           <div class="col-xs-12 text-center">
             <paper-button id="submit" class="primary add-button" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
           </div>
         </div>
       </template>
+      <template  is="dom-if" if="[[!_activateFlashForm]]">
+        <oc-peach-payment-form checkout-id='5DCD200B2B0CA7005864091C13DFB5C9.sbg-vm-tx01'></oc-peach-payment-form>
+
+      </template>
+
     </div>
   </template>
 
@@ -121,6 +120,11 @@
                       notify: true,
                       value: {}
                   },
+                  _accountTypes: {
+                      type: Array,
+                      notify: true,
+                      value: []
+                  },
                   _activateFlashForm: {
                       type: Boolean,
                       value: false,
@@ -132,8 +136,8 @@
                       notify: true
                   },
                   _accountTypeId: {
-                      type: Number,
-                      value: 1,
+                      type: String,
+                      value: "flash",
                       observer: "_switchPaymentMethod",
                   },
 
@@ -149,22 +153,33 @@
 
           ready() {
               super.ready();
+              this._getAccountTypes();
+
           }
+
 
           _submit(){
 
-              if(!this.$.submit.disabled && this.$.name.validate()
-                  && this.$.mobile.validate()) {
+              if(!this._loading && this.shadowRoot.getElementById("name").validate()
+                  && this.shadowRoot.getElementById("mobile").validate()) {
 
                   //disables the button
                   this._loading = true;
 
+
                   //build the data for the api call
                   let data = {};
-                  data._accountTypeId = this._accountTypeId
                   data.name = this._accountData.name;
 
-                  data.fields = [{
+                  data.method = this._accountTypeId;
+
+                  data.properties = [{
+                      "key": "receiver",
+                      "value": "true"
+                  }];
+
+                  data.gatewayProperties = [{
+                      "gateway": "flash",
                       key: "msisdn",
                       value: this._accountData.mobile
                   }];
@@ -181,10 +196,17 @@
                   this._accountData = {};
               }};
 
-          _switchPaymentMethod(accountType) {
-              if (accountType ==1 ) {
-                  this._activateFlashForm = true;
+          _getAccountTypes() {
+              this.$.accountsApi.getAccountTypes('personal')
+                  .then(function(request) {
+                      //TODO: catch if accounts do not exist
+                      this._accountTypes = request.response.results;
+                  }.bind(this));
+          }
 
+          _switchPaymentMethod(accountType) {
+              if (accountType === 'flash' ) {
+                  this._activateFlashForm = true;
               }
               else {
                   this._activateFlashForm = false;
