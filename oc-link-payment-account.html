@@ -1,7 +1,10 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../oc-accounts-api/oc-accounts-api.html">
-<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../oc-peach-payment/oc-peach-payment-form.html">
+
 
 
 <dom-module id="oc-link-payment-account">
@@ -11,141 +14,91 @@
 
       :host {
         display: block;
-        background: #BFD730;
+        background: #fff;
         color: #000;
       }
 
-      .image-link {
-        outline: none;
+      paper-card {
+        width:100%;
       }
 
-      .image-link > shop-image::after {
-        display: block;
-        content: '';
-        position: absolute;
-        transition-property: opacity;
-        transition-duration: 0s;
-        transition-delay: 90ms;
-        pointer-events: none;
-        opacity: 0;
-        top: 5px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
-        outline: #2196F3 auto 5px;
-        outline: -moz-mac-focusring auto 5px;
-        outline: -webkit-focus-ring-color auto 5px;
+      .add-button-row {
+        background: #ffffff;
+        margin: 15px 0;
+      }
+      .add-button {
+        width: 100%;
+        color: #fff;
+        background: #2BB673;
       }
 
-      .image-link:focus > shop-image::after {
-        opacity: 1;
-      }
 
-      .item {
-        display: block;
-        text-decoration: none;
-        text-align: center;
-        margin-bottom: 40px;
-      }
-
-      .item:nth-of-type(3),
-      .item:nth-of-type(4) {
-        display: inline-block;
-        width: 50%;
-      }
-
-      shop-image {
-        position: relative;
-        height: 320px;
-        overflow: hidden;
-        --shop-image-img: {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: -9999px;
-          right: -9999px;
-          max-width: none;
-        };
-      }
-
-      h2 {
-        font-size: 1.3em;
-        font-weight: 500;
-        margin: 32px 0;
-      }
-
-      .item:nth-of-type(3) > h2,
-      .item:nth-of-type(4) > h2 {
-        font-size: 1.1em;
-      }
-
-      @media (max-width: 767px) {
-        shop-image {
-          height: 240px;
-        }
-
-        h2 {
-          margin: 24px 0;
-        }
-
-        .item:nth-of-type(3) > shop-button > a,
-        .item:nth-of-type(4) > shop-button > a {
-          padding: 8px 24px;
-        }
-      }
-      p {
-        color: #000 !important;
-      }
-      .white-bg {
-        background: #fff;
-      }
     </style>
 
+    <oc-accounts-api id="accountsApi"></oc-accounts-api>
+
     <div class="container-fluid">
-      <paper-material class="white-bg">
+      <div class="row">
+        <div class="col-xs-12">
+
+          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
+            <template is="dom-repeat" items="[[_accountTypes]]">
+              <paper-radio-button value="[[item.method]]" name="accountType">[[item.name]]</paper-radio-button>
+            </template>
+          </paper-radio-group>
+        </div>
+      </div>
+
+      <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
         <div class="row">
           <div class="col-xs-12">
-            <oc-accounts-api id="accountsApi"></oc-accounts-api>
-            <h5>Account Details</h5>
-            <div class="row">
-              <div class="col-xs-12">
-                <paper-radio-group attr-for-selected="value" required selected="{{_accountData.accountTypeId }}">
-                  <paper-radio-button name="accountTypeId" value="1">Flash</paper-radio-button>
-                </paper-radio-group>
-              </div>
-              <div class="col-xs-12">
-                <paper-input id="name"
-                             always-float-label
-                             required
-                             auto-validate
-                             label="Account Name/Description" name="name" value="{{_accountData.name}}"
-                             min-lenght="1"
-                             error-message="Not Valid account name"></paper-input>
-              </div>
-              <div class="col-xs-12">
-                <paper-input id="mobile"
-                             always-float-label
-                             required auto-validate
-                             label="Mobile Number"
-                             name="mobile"
-                             value="{{_accountData.mobile}}"
-                             prevent-invalid-input
-                             type="number"
-                             allowed-pattern="[[0|\+[0-9]{1,5})?([7-9][0-9]{9}]"
-                             error-message="Not valid mobile number"></paper-input>
-              </div>
-            </div>
+            <paper-input id="name"
+                         always-float-label
+                         required
+                         auto-validate
+                         label="Account Name/Description" name="name" value="{{_accountData.name}}"
+                         min-lenght="1"
+                         error-message="Not Valid account name"></paper-input>
           </div>
         </div>
 
-        <h5>Payment details</h5>
         <div class="row">
-          <div class="col-xs-23">
-            <paper-button raised class="primary" on-click="_submit" disabled$="{{loading}}">Add</paper-button>
+          <div class="col-xs-12">
+            <paper-input id="mobile"
+                         always-float-label
+                         required auto-validate
+                         label="Mobile Number"
+                         name="mobile"
+                         value="{{_accountData.mobile}}"
+                         prevent-invalid-input
+                         type="number"
+                         allowed-pattern="[0-9\-]"
+                         error-message="Not valid mobile number"></paper-input>
           </div>
         </div>
-      </paper-material>
+        <div class="row add-button-row">
+          <div class="col-xs-12 text-center">
+            <paper-button id="submit" class="primary add-button" on-click="_submit" disabled$="{{_loading}}">Add</paper-button>
+          </div>
+        </div>
+      </template>
+      <template  is="dom-if" if="[[!_activateFlashForm]]">
+        <paper-input id="checkoutId"
+                     always-float-label
+                     label="CheckoutId"
+                     name="checkoutId"
+                     value="{{_computeCheckoutId}}"
+                     error-message="Not valid checkout number"></paper-input>
+
+
+
+        <oc-peach-payment-form checkout-id='[[_computeCheckoutId]]'></oc-peach-payment-form>
+
+      </template>
+
+    </div>
   </template>
+
   <script>
       /**
        * `oc-link-payment-account`
@@ -175,39 +128,105 @@
                   _accountData: {
                       type: Object,
                       notify: true,
-                      value: {accountTypeId :1}
+                      value: {}
                   },
+                  _accountTypes: {
+                      type: Array,
+                      notify: true,
+                      value: []
+                  },
+                  _activateFlashForm: {
+                      type: Boolean,
+                      value: true,
+                      notify: true,
+                      observer: "_computeCheckoutId"
+                  },
+                  _accountTypeId: {
+                      type: String,
+                      value: "flash",
+                      observer: "_switchPaymentMethod",
+                  },
+
                   value: String,
+                  _loading: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  },
+                  _checkoutId : {
+                      Type: String,
+                      notify : true
+                  }
+
+
               };
           }
 
           ready() {
               super.ready();
+              this._getAccountTypes();
+
           }
+
 
           _submit(){
 
-              if(this.$.name.validate()
-                  && this.$.mobile.validate()) {
+              if(!this._loading && this.shadowRoot.getElementById("name").validate()
+                  && this.shadowRoot.getElementById("mobile").validate()) {
+
+                  //disables the button
+                  this._loading = true;
+
 
                   //build the data for the api call
                   let data = {};
-                  data.accountTypeId = this._accountData.accountTypeId
                   data.name = this._accountData.name;
 
-                  data.fields = [{
+                  data.method = this._accountTypeId;
+
+                  data.properties = [{
+                      "key": "receiver",
+                      "value": "true"
+                  }];
+
+                  data.gatewayProperties = [{
+                      "gateway": "flash",
                       key: "msisdn",
                       value: this._accountData.mobile
                   }];
+
 
                   this.dispatchEvent(new CustomEvent('add-account', {
                       bubbles: true, composed: true, detail:
                           {accountData: data}
                   }));
+
+                  //disables the button
+                  this._loading = false;
+                  //reset the form
+                  this._accountData = {};
+              }};
+
+          _getAccountTypes() {
+              this.$.accountsApi.getAccountTypes('personal')
+                  .then(function(request) {
+                      //TODO: catch if accounts do not exist
+                      this._accountTypes = request.response.results;
+                  }.bind(this));
+          }
+
+          _switchPaymentMethod(accountType) {
+              if (accountType === 'flash' ) {
+                  this._activateFlashForm = true;
               }
-          };
+              else {
+                  this._activateFlashForm = false;
+              }
+
+          }
       }
 
       window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
   </script>
+
 </dom-module>
