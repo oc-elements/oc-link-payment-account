@@ -36,6 +36,7 @@
     </style>
 
     <oc-accounts-api id="accountsApi"></oc-accounts-api>
+
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12">
@@ -82,7 +83,16 @@
         </div>
       </template>
       <template  is="dom-if" if="[[!_activateFlashForm]]">
-        <oc-peach-payment-form checkout-id='5DCD200B2B0CA7005864091C13DFB5C9.sbg-vm-tx01'></oc-peach-payment-form>
+        <paper-input id="checkoutId"
+                     always-float-label
+                     label="CheckoutId"
+                     name="checkoutId"
+                     value="{{_computeCheckoutId}}"
+                     error-message="Not valid checkout number"></paper-input>
+
+
+
+        <oc-peach-payment-form checkout-id='[[_computeCheckoutId]]'></oc-peach-payment-form>
 
       </template>
 
@@ -127,13 +137,9 @@
                   },
                   _activateFlashForm: {
                       type: Boolean,
-                      value: false,
-                      notify: true
-                  },
-                  _activateCCForm: {
-                      type: Boolean,
-                      value: false,
-                      notify: true
+                      value: true,
+                      notify: true,
+                      observer: "_computeCheckoutId"
                   },
                   _accountTypeId: {
                       type: String,
@@ -146,7 +152,12 @@
                       type: Boolean,
                       value: false,
                       notify: true
+                  },
+                  _checkoutId : {
+                      Type: String,
+                      notify : true
                   }
+
 
               };
           }
@@ -213,12 +224,9 @@
               }
 
           }
-
       }
 
       window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
   </script>
 
 </dom-module>
-
-
