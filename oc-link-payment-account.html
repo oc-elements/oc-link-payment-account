@@ -83,17 +83,7 @@
         </div>
       </template>
       <template  is="dom-if" if="[[!_activateFlashForm]]">
-        <paper-input id="checkoutId"
-                     always-float-label
-                     label="CheckoutId"
-                     name="checkoutId"
-                     value="{{_computeCheckoutId}}"
-                     error-message="Not valid checkout number"></paper-input>
-
-
-
-        <oc-peach-payment-form checkout-id='[[_computeCheckoutId]]'></oc-peach-payment-form>
-
+        <oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
       </template>
 
     </div>
@@ -214,14 +204,32 @@
                       this._accountTypes = request.response.results;
                   }.bind(this));
           }
-
           _switchPaymentMethod(accountType) {
               if (accountType === 'flash' ) {
                   this._activateFlashForm = true;
               }
               else {
                   this._activateFlashForm = false;
+                  //fetch the token from peach
+                  this._computeCheckoutId();
               }
+          }
+
+          /**
+           * Fetches the checkout id from api
+           *
+           * @private
+           */
+          _computeCheckoutId() {
+              this.$.accountsApi.peachRegistration()
+                  .then(function (request) {
+                      this._checkoutId = request.response.id;
+                  }.bind(this))
+                  .catch(function(error){
+                      this.$.toast.failed("Payment Failed!");
+                      //TODO: log to sentry
+                      console.error(error);
+                  }.bind(this));
 
           }
       }
