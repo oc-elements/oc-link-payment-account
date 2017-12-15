@@ -7,6 +7,7 @@
     "oc-accounts-api": "git://github.com/oc-elements/oc-accounts-api#2.x",
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "iron-form": "PolymerElements/iron-form#^2.0.1",
+    "oc-core-utils" : "git://github.com/oc-elements/oc-core-utils#2.x",
     "oc-peach-payment" : "git://github.com/oc-elements/oc-peach-payment#2.x"
  
   },
