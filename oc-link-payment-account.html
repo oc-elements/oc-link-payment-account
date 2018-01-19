@@ -44,7 +44,7 @@
 
           <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
             <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.method]]" name="accountType">[[item.name]]</paper-radio-button>
+              <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]</paper-radio-button>
             </template>
           </paper-radio-group>
         </div>
@@ -107,15 +107,17 @@
           static get properties() {
               return {
                   /**
-                   * User ID to be passed
+                   * Selected organisation ID to be passed
                    */
-                  userId: {
+                  _organisationId: {
                       type: Number,
-                      statePath:  'identity.user.id'
+                      statePath: 'organisation.id'
                   },
+
                   /**
                    * Object for capturing the account to be fetched
                    */
+
                   _accountData: {
                       type: Object,
                       notify: true,
@@ -172,20 +174,11 @@
                   //build the data for the api call
                   let data = {};
                   data.name = this._accountData.name;
-
-                  data.method = this._accountTypeId;
-
+                  data.methodKey = this._accountTypeId;
                   data.properties = [{
-                      "key": "receiver",
-                      "value": "true"
+                      "key": "msisdn",
+                      "value": this._accountData.mobile
                   }];
-
-                  data.gatewayProperties = [{
-                      "gateway": "flash",
-                      key: "msisdn",
-                      value: this._accountData.mobile
-                  }];
-
 
                   this.dispatchEvent(new CustomEvent('add-account', {
                       bubbles: true, composed: true, detail:
@@ -199,14 +192,14 @@
               }};
 
           _getAccountTypes() {
-              this.$.accountsApi.getAccountTypes('personal')
+              this.$.accountsApi.getAccountTypes('business')
                   .then(function(request) {
                       //TODO: catch if accounts do not exist
                       this._accountTypes = request.response.results;
                   }.bind(this));
           }
           _switchPaymentMethod(accountType) {
-              if (accountType === 'flash' ) {
+              if (accountType === 'flash_registered_msisdn' ) {
                   this._activateFlashForm = true;
               }
               else {
