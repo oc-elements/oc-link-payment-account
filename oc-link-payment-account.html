@@ -88,9 +88,11 @@
                          label="Mobile Number"
                          name="mobile"
                          value="{{_accountData.mobile}}"
+                         inputmode="numeric"
                          prevent-invalid-input
                          type="number"
-                         allowed-pattern="[0-9\-]"
+                         pattern="[0-9]*"
+                         min="0"
                          error-message="Not valid mobile number"></paper-input>
           </div>
         </div>
