@@ -58,12 +58,11 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-12">
-
-          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
-            <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]</paper-radio-button>
-            </template>
+        <div class="col-xs-3">
+          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}" style="display: grid">
+              <template is="dom-repeat" items="[[_accountTypes]]">
+                <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]</paper-radio-button>
+              </template>
           </paper-radio-group>
         </div>
       </div>
