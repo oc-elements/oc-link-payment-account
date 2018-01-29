@@ -33,19 +33,36 @@
         background: #2BB673;
       }
 
+      .category-heading {
+        border-top: 1px #cecece solid;
+        border-bottom: 1px #cecece solid;
+        background: #f8f8f8;
+        color: #000;
+      }
+
+      h3 {
+        font-size:1.13em !important;
+        margin: 10px 0 !important;
+      }
+
 
     </style>
 
     <oc-accounts-api id="accountsApi"></oc-accounts-api>
 
+    <div class="row category-heading">
+      <div class="col-xs-12">
+        <h3>Select Account Type</h3>
+      </div>
+    </div>
+
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-12">
-
-          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}">
-            <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]</paper-radio-button>
-            </template>
+        <div class="col-xs-3">
+          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}" style="display: grid">
+              <template is="dom-repeat" items="[[_accountTypes]]">
+                <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]</paper-radio-button>
+              </template>
           </paper-radio-group>
         </div>
       </div>
