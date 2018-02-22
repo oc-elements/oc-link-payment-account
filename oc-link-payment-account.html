@@ -33,7 +33,7 @@
           <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
                              style="display: grid">
             <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.key]]" name="accountType">[[item.label]]
+              <paper-radio-button value="[[item.key]]" name="accountType"> <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon> [[item.label]]
               </paper-radio-button>
             </template>
           </paper-radio-group>
@@ -51,9 +51,6 @@
                          min-lenght="1"
                          error-message="Not Valid account name"></paper-input>
           </div>
-        </div>
-
-        <div class="row">
           <div class="col-xs-12">
             <paper-input id="mobile"
                          always-float-label
@@ -273,6 +270,22 @@
 				  }.bind(this));
 
 		  }
+          _computeMethodIcon(method){
+              switch(method){
+                  case  'system':
+                      return 'custom:camel';
+                      break;
+                  case  'peach_registered_card':
+                      return 'icons:credit-card';
+                      break;
+                  case  'flash_registered_msisdn':
+                      return 'custom:cow';
+                      break;
+                  case  'bank_account':
+                      return 'icons:account-balance';
+                      break;
+              }
+          }
 
 		  // This will be trigger when form submit was successful with data build up
 		  _addOrganisationAccount(accountData) {
