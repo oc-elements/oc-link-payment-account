@@ -33,7 +33,9 @@
           <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
                              style="display: grid">
             <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.key]]" name="accountType"> <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon> [[item.label]]
+              <paper-radio-button value="[[item.key]]" name="accountType">
+                <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon>
+                [[item.label]]
               </paper-radio-button>
             </template>
           </paper-radio-group>
@@ -64,6 +66,13 @@
                          pattern="[0-9]*"
                          min="0"
                          error-message="Not valid mobile number"></paper-input>
+          </div>
+        </div>
+        <div class="row add-button-row">
+          <div class="col-xs-12 text-center">
+            <paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit"
+                          disabled$="{{_loading}}">Add
+            </paper-button>
           </div>
         </div>
       </template>
@@ -270,22 +279,23 @@
 				  }.bind(this));
 
 		  }
-          _computeMethodIcon(method){
-              switch(method){
-                  case  'system':
-                      return 'custom:camel';
-                      break;
-                  case  'peach_registered_card':
-                      return 'icons:credit-card';
-                      break;
-                  case  'flash_registered_msisdn':
-                      return 'custom:cow';
-                      break;
-                  case  'bank_account':
-                      return 'icons:account-balance';
-                      break;
-              }
-          }
+
+		  _computeMethodIcon(method) {
+			  switch (method) {
+				  case  'system':
+					  return 'custom:camel';
+					  break;
+				  case  'peach_registered_card':
+					  return 'icons:credit-card';
+					  break;
+				  case  'flash_registered_msisdn':
+					  return 'custom:cow';
+					  break;
+				  case  'bank_account':
+					  return 'icons:account-balance';
+					  break;
+			  }
+		  }
 
 		  // This will be trigger when form submit was successful with data build up
 		  _addOrganisationAccount(accountData) {
