@@ -13,108 +13,108 @@
 
 <dom-module id="oc-link-payment-account">
   <template>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style include="oc-button-styles" is="custom-style">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<style include="oc-button-styles" is="custom-style">
 
-      :host {
-        display: block;
-        background: #fff;
-        color: #000;
-      }
+	  :host {
+		display: block;
+		background: #fff;
+		color: #000;
+	  }
 
-    </style>
+	</style>
 
-    <oc-accounts-api id="accountsApi"></oc-accounts-api>
-    <oc-toast id="toast"></oc-toast>
+	<oc-accounts-api id="accountsApi"></oc-accounts-api>
+	<oc-toast id="toast"></oc-toast>
 
-    <oc-form-container header="Select Account Type">
-      <div class="row">
-        <div class="col-xs-12">
-          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
-                             style="display: grid">
-            <template is="dom-repeat" items="[[_accountTypes]]">
-              <paper-radio-button value="[[item.key]]" name="accountType">
-                <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon>
-                [[item.label]]
-              </paper-radio-button>
-            </template>
-          </paper-radio-group>
-        </div>
-      </div>
+	<oc-form-container header="Select Account Type">
+	  <div class="row">
+		<div class="col-xs-12">
+		  <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
+							 style="display: grid">
+			<template is="dom-repeat" items="[[_accountTypes]]">
+			  <paper-radio-button value="[[item.key]]" name="accountType">
+				<iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon>
+				[[item.label]]
+			  </paper-radio-button>
+			</template>
+		  </paper-radio-group>
+		</div>
+	  </div>
 
-      <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
-        <div class="row">
-          <div class="col-xs-12">
-            <paper-input id="name"
-                         always-float-label
-                         required
-                         auto-validate
-                         label="Account Name" name="name" value="{{_accountData.name}}"
-                         min-lenght="1"
-                         error-message="Not Valid account name"></paper-input>
-          </div>
-          <div class="col-xs-12">
-            <paper-input id="mobile"
-                         always-float-label
-                         required auto-validate
-                         label="Mobile Number"
-                         name="mobile"
-                         value="{{_accountData.mobile}}"
-                         inputmode="numeric"
-                         prevent-invalid-input
-                         type="tel"
-                         pattern="[0-9]*"
-                         min="0"
-                         error-message="Not valid mobile number"></paper-input>
-          </div>
-        </div>
-        <div class="row add-button-row">
-          <div class="col-xs-12 text-center">
-            <paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit"
-                          disabled$="{{_loading}}">Add
-            </paper-button>
-          </div>
-        </div>
-      </template>
-      <template is="dom-if" if="[[_isCard]]">
-        <oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
-      </template>
-      <template is="dom-if" if="[[_isBankAccount]]">
-        <iron-form id="bankForm">
-          <form method="get">
-            <template is="dom-repeat" items="[[_bankData.attributes]]" as="component">
+	  <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
+		<div class="row">
+		  <div class="col-xs-12">
+			<paper-input id="name"
+						 always-float-label
+						 required
+						 auto-validate
+						 label="Account Name" name="name" value="{{_accountData.name}}"
+						 min-lenght="1"
+						 error-message="Not Valid account name"></paper-input>
+		  </div>
+		  <div class="col-xs-12">
+			<paper-input id="mobile"
+						 always-float-label
+						 required auto-validate
+						 label="Mobile Number"
+						 name="mobile"
+						 value="{{_accountData.mobile}}"
+						 inputmode="numeric"
+						 prevent-invalid-input
+						 type="tel"
+						 pattern="[0-9]*"
+						 min="0"
+						 error-message="Not valid mobile number"></paper-input>
+		  </div>
+		</div>
+		<div class="row add-button-row">
+		  <div class="col-xs-12 text-center">
+			<paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit"
+						  disabled$="{{_loading}}">Add
+			</paper-button>
+		  </div>
+		</div>
+	  </template>
+	  <template is="dom-if" if="[[_isCard]]">
+		<oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
+	  </template>
+	  <template is="dom-if" if="[[_isBankAccount]]">
+		<iron-form id="bankForm">
+		  <form method="get">
+			<template is="dom-repeat" items="[[_bankData.attributes]]" as="component">
 
-              <!-- Text Input Component -->
-              <template is="dom-if" if="[[_isText(component.fieldType)]]" as="component">
-                <paper-input type="[[component.fieldType]]" label="[[component.label]]"
-                             name="[[component.key]]"
-                             value="{{component.value}}" auto-validate
-                             required></paper-input>
-              </template>
+			  <!-- Text Input Component -->
+			  <template is="dom-if" if="[[_isText(component.fieldType)]]" as="component">
+				<paper-input type="[[component.fieldType]]" label="[[component.label]]"
+							 name="[[component.key]]"
+							 value="{{component.value}}" auto-validate
+							 required></paper-input>
+			  </template>
 
-              <!-- Dropdown Menu Component -->
-              <template is="dom-if" if="[[_isOption(component.fieldType)]]">
-                <paper-dropdown-menu label="Select Account Type" name="[[component.key]]">
-                  <paper-listbox slot="dropdown-content" attr-for-selected="key"
-                                 selected="{{component.value}}">
-                    <template is="dom-repeat" items="[[_getDropDownItems(component.validation)]]"
-                              as="option">
-                      <paper-item key="[[option]]">[[option]]</paper-item>
-                    </template>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-              </template>
-            </template>
-          </form>
-        </iron-form>
-        <paper-button id="submit" class="primary-button" on-click="_submitBankAccount" slot="button">Add
-        </paper-button>
-      </template>
-    </oc-form-container>
+			  <!-- Dropdown Menu Component -->
+			  <template is="dom-if" if="[[_isOption(component.fieldType)]]">
+				<paper-dropdown-menu label="Select Account Type" name="[[component.key]]">
+				  <paper-listbox slot="dropdown-content" attr-for-selected="key"
+								 selected="{{component.value}}">
+					<template is="dom-repeat" items="[[_getDropDownItems(component.validation)]]"
+							  as="option">
+					  <paper-item key="[[option]]">[[option]]</paper-item>
+					</template>
+				  </paper-listbox>
+				</paper-dropdown-menu>
+			  </template>
+			</template>
+		  </form>
+		</iron-form>
+		<paper-button id="submit" class="primary-button" on-click="_submitBankAccount" slot="button">Add
+		</paper-button>
+	  </template>
+	</oc-form-container>
   </template>
 
   <script>
-	  /**
+ /**
 	   * `oc-link-payment-account`
 	   * Element to link payment accounts
 	   *
@@ -304,6 +304,9 @@
 				  // Reset submit form
 				  this.root.querySelector('#bankForm').reset();
 			  this.showScreen = false;
+			  this.dispatchEvent(new CustomEvent('add-bank-account', {
+				  bubbles: true, composed: true
+			  }));
 		  })
 		  .catch((error) => {
 				  this.$.toast.failed(`Failed to Add Account! \n ${error.message}`);
