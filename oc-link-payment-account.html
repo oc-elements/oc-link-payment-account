@@ -12,236 +12,236 @@
 <link rel="import" href="../../src/oc-button-styles.html">
 
 <dom-module id="oc-link-payment-account">
-    <template>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <style include="oc-button-styles" is="custom-style">
+  <template>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style include="oc-button-styles" is="custom-style">
 
-            :host {
-                display: block;
-                background: #fff;
-                color: #000;
-            }
+      :host {
+        display: block;
+        background: #fff;
+        color: #000;
+      }
 
-        </style>
+    </style>
 
-        <oc-accounts-api id="accountsApi"></oc-accounts-api>
-        <oc-toast id="toast"></oc-toast>
+    <oc-accounts-api id="accountsApi"></oc-accounts-api>
+    <oc-toast id="toast"></oc-toast>
 
-        <oc-form-container header="Select Account Type">
-            <div class="row">
-                <div class="col-xs-12">
-                    <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
-                                       style="display: grid">
-                        <template is="dom-repeat" items="[[_accountTypes]]">
-                            <paper-radio-button value="[[item.key]]" name="accountType">
-                                <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon>
-                                [[item.label]]
-                            </paper-radio-button>
-                        </template>
-                    </paper-radio-group>
-                </div>
-            </div>
-
-            <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <paper-input id="name"
-                                     always-float-label
-                                     required
-                                     auto-validate
-                                     label="Account Name" name="name" value="{{_accountData.name}}"
-                                     min-lenght="1"
-                                     error-message="Not Valid account name"></paper-input>
-                    </div>
-                    <div class="col-xs-12">
-                        <paper-input id="mobile"
-                                     always-float-label
-                                     required
-                                     auto-validate
-                                     label="Mobile Number"
-                                     name="mobile"
-                                     value="{{_accountData.mobile}}"
-                                     inputmode="numeric"
-                                     prevent-invalid-input
-                                     type="tel"
-                                     pattern="[0-9 ]*"
-                                     min="0"
-                                     error-message="Not valid mobile number"></paper-input>
-                    </div>
-                </div>
-                <div class="row add-button-row">
-                    <div class="col-xs-12 text-center">
-                        <paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit"
-                                      disabled$="{{_loading}}">Add
-                        </paper-button>
-                    </div>
-                </div>
+    <oc-form-container header="Select Account Type">
+      <div class="row">
+        <div class="col-xs-12">
+          <paper-radio-group attr-for-selected="value" required selected="{{ _accountTypeId }}"
+                             style="display: grid">
+            <template is="dom-repeat" items="[[_accountTypes]]">
+              <paper-radio-button value="[[item.key]]" name="accountType">
+                <iron-icon icon="[[_computeMethodIcon(item.key)]]"></iron-icon>
+                [[item.label]]
+              </paper-radio-button>
             </template>
-            <template is="dom-if" if="[[_isCard]]">
-                <oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
-            </template>
-        </oc-form-container>
-    </template>
+          </paper-radio-group>
+        </div>
+      </div>
 
-    <script>
-        /**
-         * `oc-link-payment-account`
-         * Element to link payment accounts
-         *
-         * @customElement
-         * @polymer
-         * @demo demo/index.html
-         */
-        class OcLinkPaymentAccount extends Ordercloud.ReduxMixin(Polymer.Element) {
-            static get is() {
-                return 'oc-link-payment-account';
-            }
+      <template id="flash" is="dom-if" if="[[_activateFlashForm]]">
+        <div class="row">
+          <div class="col-xs-12">
+            <paper-input id="name"
+                         always-float-label
+                         required
+                         auto-validate
+                         label="Account Name" name="name" value="{{_accountData.name}}"
+                         min-lenght="1"
+                         error-message="Not Valid account name"></paper-input>
+          </div>
+          <div class="col-xs-12">
+            <paper-input id="mobile"
+                         always-float-label
+                         required
+                         auto-validate
+                         label="Mobile Number"
+                         name="mobile"
+                         value="{{_accountData.mobile}}"
+                         inputmode="numeric"
+                         prevent-invalid-input
+                         type="tel"
+                         pattern="[0-9 ]*"
+                         min="0"
+                         error-message="Not valid mobile number"></paper-input>
+          </div>
+        </div>
+        <div class="row add-button-row">
+          <div class="col-xs-12 text-center">
+            <paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit"
+                          disabled$="{{_loading}}">Add
+            </paper-button>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[_isCard]]">
+        <oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
+      </template>
+    </oc-form-container>
+  </template>
 
-            static get properties() {
-                return {
-                    /**
-                     * Selected organisation ID to be passed
-                     */
-                    _organisationId: {
-                        type: Number,
-                        statePath: 'organisation.id'
-                    },
+  <script>
+      /**
+       * `oc-link-payment-account`
+       * Element to link payment accounts
+       *
+       * @customElement
+       * @polymer
+       * @demo demo/index.html
+       */
+      class OcLinkPaymentAccount extends Ordercloud.ReduxMixin(Polymer.Element) {
+          static get is() {
+              return 'oc-link-payment-account';
+          }
 
-                    /**
-                     * Object for capturing the account to be fetched
-                     */
+          static get properties() {
+              return {
+                  /**
+                   * Selected organisation ID to be passed
+                   */
+                  _organisationId: {
+                      type: Number,
+                      statePath: 'organisation.id'
+                  },
 
-                    _accountData: {
-                        type: Object,
-                        notify: true,
-                        value: {}
-                    },
-                    _accountTypes: {
-                        type: Array,
-                        notify: true,
-                        value: []
-                    },
-                    _activateFlashForm: {
-                        type: Boolean,
-                        value: true,
-                        notify: true,
-                        observer: "_computeCheckoutId"
-                    },
-                    _isCard: {
-                        type: Boolean,
-                        value: false
-                    },
-                    _accountTypeId: {
-                        type: String,
-                        value: "flash_registered_msisdn",
-                        observer: "_switchPaymentMethod",
-                    },
-                    _checkoutId: {
-                        Type: String,
-                        notify: true
-                    },
-                    showScreen: {
-                        type: Boolean,
-                        value: false,
-                        notify: true
-                    }
-                };
-            }
+                  /**
+                   * Object for capturing the account to be fetched
+                   */
 
-            ready() {
-                super.ready();
-                this._getAccountTypes();
-            }
+                  _accountData: {
+                      type: Object,
+                      notify: true,
+                      value: {}
+                  },
+                  _accountTypes: {
+                      type: Array,
+                      notify: true,
+                      value: []
+                  },
+                  _activateFlashForm: {
+                      type: Boolean,
+                      value: true,
+                      notify: true,
+                      observer: "_computeCheckoutId"
+                  },
+                  _isCard: {
+                      type: Boolean,
+                      value: false
+                  },
+                  _accountTypeId: {
+                      type: String,
+                      value: "flash_registered_msisdn",
+                      observer: "_switchPaymentMethod",
+                  },
+                  _checkoutId: {
+                      Type: String,
+                      notify: true
+                  },
+                  showScreen: {
+                      type: Boolean,
+                      value: false,
+                      notify: true
+                  }
+              };
+          }
 
-            _submit() {
+          ready() {
+              super.ready();
+              this._getAccountTypes();
+          }
 
-                if (!this._loading && this.shadowRoot.getElementById("name").validate()
-                    && this.shadowRoot.getElementById("mobile").validate()) {
+          _submit() {
 
-                    //build the data for the api call
-                    let data = {};
-                    data.name = this._accountData.name;
-                    data.methodKey = this._accountTypeId;
-                    data.properties = [{
-                        "key": "msisdn",
-                        "value": this._accountData.mobile
-                    }];
+              if (!this._loading && this.shadowRoot.getElementById("name").validate()
+                  && this.shadowRoot.getElementById("mobile").validate()) {
 
-                    this.dispatchEvent(new CustomEvent('add-account', {
-                        bubbles: true, composed: true, detail:
-                            {accountData: data}
-                    }));
+                  //build the data for the api call
+                  let data = {};
+                  data.name = this._accountData.name;
+                  data.methodKey = this._accountTypeId;
+                  data.properties = [{
+                      "key": "msisdn",
+                      "value": this._accountData.mobile
+                  }];
 
-                    //reset the form
-                    this._accountData = {};
-                }
-            };
+                  this.dispatchEvent(new CustomEvent('add-account', {
+                      bubbles: true, composed: true, detail:
+                          {accountData: data}
+                  }));
 
-            _getAccountTypes() {
-                this.$.accountsApi.getAccountTypes('business')
-                    .then(function (request) {
-                        //TODO: catch if accounts do not exist
+                  //reset the form
+                  this._accountData = {};
+              }
+          };
 
-                        // We are filtering out bank_accounts, since this component is only used by the order app
-                        this._accountTypes = request.response.results.filter((item) => {
-                            return item.key !== "bank_account";
-                        });
+          _getAccountTypes() {
+              this.$.accountsApi.getAccountTypes('business')
+                  .then(function (request) {
+                      //TODO: catch if accounts do not exist
 
-                    }.bind(this));
-            }
+                      // We are filtering out bank_accounts, since this component is only used by the order app
+                      this._accountTypes = request.response.results.filter((item) => {
+                          return item.key !== "bank_account";
+                      });
 
-            _switchPaymentMethod(accountType) {
-                this._activateFlashForm = false;
-                this._isCard = false;
+                  }.bind(this));
+          }
 
-                if (accountType === 'flash_registered_msisdn') {
-                    this._activateFlashForm = true;
-                } else if (accountType === "peach_registered_card") {
-                    this._isCard = true;
-                    //fetch the token from peach
-                    this._computeCheckoutId();
-                } else {
-                    console.error(`Invalid Account Type: ${accountType}`)
-                }
-            }
+          _switchPaymentMethod(accountType) {
+              this._activateFlashForm = false;
+              this._isCard = false;
 
-            /**
-             * Fetches the checkout id from api
-             *
-             * @private
-             */
-            _computeCheckoutId() {
-                this.$.accountsApi.peachRegistration()
-                    .then(function (request) {
-                        this._checkoutId = request.response.id;
-                    }.bind(this))
-                    .catch(function (error) {
-                        this.$.toast.failed("Payment Failed!");
-                        //TODO: log to sentry
-                        console.error(error);
-                    }.bind(this));
+              if (accountType === 'flash_registered_msisdn') {
+                  this._activateFlashForm = true;
+              } else if (accountType === "peach_registered_card") {
+                  this._isCard = true;
+                  //fetch the token from peach
+                  this._computeCheckoutId();
+              } else {
+                  console.error(`Invalid Account Type: ${accountType}`)
+              }
+          }
 
-            }
+          /**
+           * Fetches the checkout id from api
+           *
+           * @private
+           */
+          _computeCheckoutId() {
+              this.$.accountsApi.peachRegistration()
+                  .then(function (request) {
+                      this._checkoutId = request.response.id;
+                  }.bind(this))
+                  .catch(function (error) {
+                      this.$.toast.failed("Payment Failed!");
+                      //TODO: log to sentry
+                      console.error(error);
+                  }.bind(this));
 
-            _computeMethodIcon(method) {
-                switch (method) {
-                    case  'system':
-                        return 'custom:camel';
-                        break;
-                    case  'peach_registered_card':
-                        return 'icons:credit-card';
-                        break;
-                    case  'flash_registered_msisdn':
-                        return 'custom:cow';
-                        break;
-                    case 'kazang_registered_account':
-                        return 'kazang:kazang';
-                        break;
-                }
-            }
-        }
+          }
 
-        window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
-    </script>
+          _computeMethodIcon(method) {
+              switch (method) {
+                  case  'system':
+                      return 'custom:camel';
+                      break;
+                  case  'peach_registered_card':
+                      return 'icons:credit-card';
+                      break;
+                  case  'flash_registered_msisdn':
+                      return 'custom:cow';
+                      break;
+                  case 'kazang_registered_account':
+                      return 'kazang:kazang';
+                      break;
+              }
+          }
+      }
+
+      window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
+  </script>
 
 </dom-module>
