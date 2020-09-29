@@ -64,164 +64,165 @@
 	</template>
 
 	<script>
-        /**
-         * `oc-link-payment-account`
-         * Element to link payment accounts
-         *
-         * @customElement
-         * @polymer
-         * @demo demo/index.html
-         */
-        class OcLinkPaymentAccount extends Ordercloud.ReduxMixin(Polymer.Element) {
-            static get is() {
-                return 'oc-link-payment-account';
-            }
+		/**
+		 * `oc-link-payment-account`
+		 * Element to link payment accounts
+		 *
+		 * @customElement
+		 * @polymer
+		 * @demo demo/index.html
+		 */
+		class OcLinkPaymentAccount extends Ordercloud.ReduxMixin(Polymer.Element) {
+			static get is() {
+				return 'oc-link-payment-account';
+			}
 
-            static get properties() {
-                return {
-                    /**
-                     * Selected organisation ID to be passed
-                     */
-                    _organisationId: {
-                        type: Number,
-                        statePath: 'organisation.id'
-                    },
+			static get properties() {
+				return {
+					/**
+					 * Selected organisation ID to be passed
+					 */
+					_organisationId: {
+						type: Number,
+						statePath: 'organisation.id'
+					},
 
-                    /**
-                     * Object for capturing the account to be fetched
-                     */
+					/**
+					 * Object for capturing the account to be fetched
+					 */
 
-                    _accountData: {
-                        type: Object,
-                        notify: true,
-                        value: {}
-                    },
-                    _accountTypes: {
-                        type: Array,
-                        notify: true,
-                        value: []
-                    },
-                    _activateFlashForm: {
-                        type: Boolean,
-                        value: true,
-                        notify: true,
-                        observer: "_computeCheckoutId"
-                    },
-                    _isCard: {
-                        type: Boolean,
-                        value: false
-                    },
-                    _accountTypeId: {
-                        type: String,
-                        value: "flash_registered_msisdn",
-                        observer: "_switchPaymentMethod",
-                    },
-                    _checkoutId: {
-                        Type: String,
-                        notify: true
-                    },
-                    showScreen: {
-                        type: Boolean,
-                        value: false,
-                        notify: true
-                    }
-                };
-            }
+					_accountData: {
+						type: Object,
+						notify: true,
+						value: {}
+					},
+					_accountTypes: {
+						type: Array,
+						notify: true,
+						value: []
+					},
+					_activateFlashForm: {
+						type: Boolean,
+						value: true,
+						notify: true,
+						observer: "_computeCheckoutId"
+					},
+					_isCard: {
+						type: Boolean,
+						value: false
+					},
+					_accountTypeId: {
+						type: String,
+						value: "flash_registered_msisdn",
+						observer: "_switchPaymentMethod",
+					},
+					_checkoutId: {
+						Type: String,
+						notify: true
+					},
+					showScreen: {
+						type: Boolean,
+						value: false,
+						notify: true
+					}
+				};
+			}
 
-            ready() {
-                super.ready();
-                this._getAccountTypes();
-            }
+			ready() {
+				super.ready();
+				this._getAccountTypes();
+			}
 
-            _submit() {
+			_submit() {
 
-                if (!this._loading && this.shadowRoot.getElementById("name").validate()
-                    && this.shadowRoot.getElementById("mobile").validate()) {
+				if (!this._loading && this.shadowRoot.getElementById("name").validate()
+					&& this.shadowRoot.getElementById("mobile").validate()) {
 
-                    //build the data for the api call
-                    let data = {};
-                    data.name = this._accountData.name;
-                    data.methodKey = this._accountTypeId;
-                    data.properties = [{
-                        "key": "msisdn",
-                        "value": this._accountData.mobile
-                    }];
+					//build the data for the api call
+					let data = {};
+					data.name = this._accountData.name;
+					data.methodKey = this._accountTypeId;
+					data.properties = [{
+						"key": "msisdn",
+						"value": this._accountData.mobile
+					}];
 
-                    this.dispatchEvent(new CustomEvent('add-account', {
-                        bubbles: true, composed: true, detail:
-                            { accountData: data }
-                    }));
+					this.dispatchEvent(new CustomEvent('add-account', {
+						bubbles: true, composed: true, detail:
+							{ accountData: data }
+					}));
 
-                    //reset the form
-                    this._accountData = {};
-                }
-            };
+					//reset the form
+					this._accountData = {};
+				}
+			};
 
-            _getAccountTypes() {
-                this.$.accountsApi.getAccountTypes('business')
-                    .then(function (request) {
-                        //TODO: catch if accounts do not exist
+			_getAccountTypes() {
+				this.$.accountsApi.getAccountTypes('business')
+					.then(function (request) {
+						//TODO: catch if accounts do not exist
 
-                        // We are filtering out bank_accounts, since this component is only used by the order app
-                        this._accountTypes = request.response.results.filter((item) => {
-                            return item.key !== "bank_account";
-                        });
+						// We are filtering out bank_accounts, since this component is only used by the order app
+						// September 2020 update: We also filter debit/credit cards
+						this._accountTypes = request.response.results.filter((item) => {
+							return item.key !== "bank_account" && item.key !=="peach_registered_card";
+						});
 
-                    }.bind(this));
-            }
+					}.bind(this));
+			}
 
-            _switchPaymentMethod(accountType) {
-                this._activateFlashForm = false;
-                this._isCard = false;
+			_switchPaymentMethod(accountType) {
+				this._activateFlashForm = false;
+				this._isCard = false;
 
-                if (accountType === 'flash_registered_msisdn') {
-                    this._activateFlashForm = true;
-                } else if (accountType === "peach_registered_card") {
-                    this._isCard = true;
-                    //fetch the token from peach
-                    this._computeCheckoutId();
-                } else {
-                    console.error(`Invalid Account Type: ${accountType}`)
-                }
-            }
+				if (accountType === 'flash_registered_msisdn') {
+					this._activateFlashForm = true;
+				} else if (accountType === "peach_registered_card") {
+					this._isCard = true;
+					//fetch the token from peach
+					this._computeCheckoutId();
+				} else {
+					console.error(`Invalid Account Type: ${accountType}`)
+				}
+			}
 
-            /**
-             * Fetches the checkout id from api
-             *
-             * @private
-             */
-            _computeCheckoutId() {
-                this.$.accountsApi.peachRegistration()
-                    .then(function (request) {
-                        this._checkoutId = request.response.id;
-                    }.bind(this))
-                    .catch(function (error) {
-                        this.$.toast.failed("Payment Failed!");
-                        //TODO: log to sentry
-                        console.error(error);
-                    }.bind(this));
+			/**
+			 * Fetches the checkout id from api
+			 *
+			 * @private
+			 */
+			_computeCheckoutId() {
+				this.$.accountsApi.peachRegistration()
+					.then(function (request) {
+						this._checkoutId = request.response.id;
+					}.bind(this))
+					.catch(function (error) {
+						this.$.toast.failed("Payment Failed!");
+						//TODO: log to sentry
+						console.error(error);
+					}.bind(this));
 
-            }
+			}
 
-            _computeMethodIcon(method) {
-                switch (method) {
-                    case 'system':
-                        return 'custom:camel';
-                        break;
-                    case 'peach_registered_card':
-                        return 'icons:credit-card';
-                        break;
-                    case 'flash_registered_msisdn':
-                        return 'custom:cow';
-                        break;
-                    case 'kazang_registered_account':
-                        return 'kazang:kazang';
-                        break;
-                }
-            }
-        }
+			_computeMethodIcon(method) {
+				switch (method) {
+					case 'system':
+						return 'custom:camel';
+						break;
+					case 'peach_registered_card':
+						return 'icons:credit-card';
+						break;
+					case 'flash_registered_msisdn':
+						return 'custom:cow';
+						break;
+					case 'kazang_registered_account':
+						return 'kazang:kazang';
+						break;
+				}
+			}
+		}
 
-        window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
+		window.customElements.define(OcLinkPaymentAccount.is, OcLinkPaymentAccount);
 	</script>
 
 </dom-module>
