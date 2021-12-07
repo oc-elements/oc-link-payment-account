@@ -4,7 +4,6 @@
 <link rel="import" href="../iron-form/iron-form.html">
 
 <link rel="import" href="../oc-accounts-api/oc-accounts-api.html">
-<link rel="import" href="../oc-peach-payment/oc-peach-payment-form.html">
 <link rel="import" href="../oc-core-utils/oc-store.html">
 <link rel="import" href="../oc-form-container/oc-form-container.html">
 <link rel="import" href="../oc-toast/oc-toast.html">
@@ -43,22 +42,19 @@
 				<div class="row">
 					<div class="col-xs-12">
 						<paper-input id="name" always-float-label required label="Account Name" name="name" value="{{_accountData.name}}" min-lenght="1"
-									 error-message="Not Valid account name" tabindex="1"></paper-input>
+						 error-message="Not Valid account name"></paper-input>
 					</div>
 					<div class="col-xs-12">
 						<paper-input id="mobile" always-float-label required label="Mobile Number" name="mobile" value="{{_accountData.mobile}}"
-									 inputmode="numeric" prevent-invalid-input type="tel" pattern="[0-9 ]*" min="0" error-message="Not valid mobile number" tabindex="2"></paper-input>
+						 inputmode="numeric" prevent-invalid-input type="tel" pattern="[0-9 ]*" min="0" error-message="Not valid mobile number"></paper-input>
 					</div>
 				</div>
 				<div class="row add-button-row">
 					<div class="col-xs-12 text-center">
-						<paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit" disabled$="{{_loading}}" tabindex="3">Add
+						<paper-button id="submitFlash" class="primary-button" slot="button" on-click="_submit" disabled$="{{_loading}}">Add
 						</paper-button>
 					</div>
 				</div>
-			</template>
-			<template is="dom-if" if="[[_isCard]]">
-				<oc-peach-payment-form checkout-id='[[_checkoutId]]'></oc-peach-payment-form>
 			</template>
 		</oc-form-container>
 	</template>
@@ -179,29 +175,9 @@
 					this._activateFlashForm = true;
 				} else if (accountType === "peach_registered_card") {
 					this._isCard = true;
-					//fetch the token from peach
-					this._computeCheckoutId();
 				} else {
 					console.error(`Invalid Account Type: ${accountType}`)
 				}
-			}
-
-			/**
-			 * Fetches the checkout id from api
-			 *
-			 * @private
-			 */
-			_computeCheckoutId() {
-				this.$.accountsApi.peachRegistration()
-					.then(function (request) {
-						this._checkoutId = request.response.id;
-					}.bind(this))
-					.catch(function (error) {
-						this.$.toast.failed("Payment Failed!");
-						//TODO: log to sentry
-						console.error(error);
-					}.bind(this));
-
 			}
 
 			_computeMethodIcon(method) {
